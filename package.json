@@ -1,0 +1,22 @@
+{
+  "name": "facebook-api",
+  "version": "0.0.0",
+  "description": "Practicing with graph api from Facebook",
+  "main": "scraper.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Steven-Nagie/facebook-api.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Steven-Nagie/facebook-api/issues"
+  },
+  "homepage": "https://github.com/Steven-Nagie/facebook-api",
+  "dependencies": {
+    "fb": "^1.1.1"
+  }
+}
