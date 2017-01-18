@@ -29,6 +29,19 @@ getAppEmail = () => {
   });
 }
 
+// The id is in the URL, but formatted differently there than they want it here.
+getPost = () => {
+  app.api(`839057202881028_1144637245656354/sharedposts`, function(res) {
+    if(!res || res.error) {
+     console.log(!res ? 'error occurred' : res.error);
+     return;
+    }
+    console.log(res);
+    // var totalLikes = res.data.length;
+    // console.log("total likes: ", totalLikes);
+  });
+}
+
 // Use id to get more info on user
 // Turns out we get the same information whether we use an id or username, so no real need to keep this.
 /*
@@ -45,9 +58,9 @@ getPublicProfileID = (id) => {
 
 // Try to get a person's public page
 // Hitting /likes will show us what they like, not how many likes they have.
-// ?fields=fan_count gets us how many likes they have. 
+// ?fields=fan_count gets us how many likes they have.
 getPublicProfile = () => {
-  app.api(`brandonmikesell23?fields=fan_count`, function(res) {
+  app.api(`brandonmikesell23/feed`, function(res) {
     if(!res || res.error) {
      console.log(!res ? 'error occurred' : res.error);
      return;
@@ -107,5 +120,6 @@ FB.api(`oauth/access_token?client_id=${config.appId}&client_secret=${config.appS
   console.log("access token: ", accessToken);
   app.setAccessToken(accessToken);
   // getPage();
-  getPublicProfile();
+  // getPublicProfile();
+  getPost();
 })
