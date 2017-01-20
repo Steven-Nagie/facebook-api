@@ -5,6 +5,28 @@ var accessToken;
 FB.options({version: 'v2.8'});
 var app = FB.extend({appId: config.appId, appSecret: config.appSecret});
 
+var site = "https://www.facebook.com/brandonmikesell23/photos/a.841942249259190.1073741828.839057202881028/1144637245656354/?type=3&theater"
+
+var user;
+var startSlice = 0;
+var endSlice = 0;
+var flag = false;
+for (var i = 0; i < site.length; i++) {
+  if (site.charAt(i) === 'c' && site.charAt(i+1) === 'o' && site.charAt(i+2) === 'm') {
+    startSlice = i + 4;
+    console.log(startSlice)
+  }
+
+  if (site.charAt(i) === '/' && startSlice !== 0 && startSlice < i && !flag) {
+    console.log("Making endslice", i);
+    endSlice = i;
+    flag = true;
+  }
+}
+user = site.slice(startSlice, endSlice);
+console.log(user);
+
+
 // Default response for appId endpoint contains category, link, name, and id
 getApp = () => {
   app.api(`${config.appId}`, function (res) {
@@ -109,17 +131,17 @@ getPage = () => {
 }
 
 // To generate an App access token
-FB.api(`oauth/access_token?client_id=${config.appId}&client_secret=${config.appSecret}&grant_type=client_credentials`, function(res) {
-
-  if (!res || res.error) {
-    console.log(!res ? 'error occurred' : res.error);
-    return;
-  }
-
-  accessToken = res.access_token;
-  console.log("access token: ", accessToken);
-  app.setAccessToken(accessToken);
-  // getPage();
-  // getPublicProfile();
-  getPost();
-})
+// FB.api(`oauth/access_token?client_id=${config.appId}&client_secret=${config.appSecret}&grant_type=client_credentials`, function(res) {
+//
+//   if (!res || res.error) {
+//     console.log(!res ? 'error occurred' : res.error);
+//     return;
+//   }
+//
+//   accessToken = res.access_token;
+//   console.log("access token: ", accessToken);
+//   app.setAccessToken(accessToken);
+//   // getPage();
+//   // getPublicProfile();
+//   getPost();
+// })
