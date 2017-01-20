@@ -5,26 +5,49 @@ var accessToken;
 FB.options({version: 'v2.8'});
 var app = FB.extend({appId: config.appId, appSecret: config.appSecret});
 
-var site = "https://www.facebook.com/brandonmikesell23/photos/a.841942249259190.1073741828.839057202881028/1144637245656354/?type=3&theater"
+
+// If there is any way to see the post's content, it would probably be easier to get its id from the user's feed than to parse the url looking for the correct id.
+// var site = "https://www.facebook.com/brandonmikesell23/photos/a.841942249259190.1073741828.839057202881028/1144637245656354/?type=3&theater"
+
+var site = "https://www.facebook.com/brandonmikesell23/photos/a.841942249259190.1073741828.839057202881028/1190506704402741/?type=3&theater";
 
 var user;
-var startSlice = 0;
-var endSlice = 0;
-var flag = false;
-for (var i = 0; i < site.length; i++) {
-  if (site.charAt(i) === 'c' && site.charAt(i+1) === 'o' && site.charAt(i+2) === 'm') {
-    startSlice = i + 4;
-    console.log(startSlice)
+var id;
+parseUser = () => {
+  var startSliceUser = 0;
+  var endSliceUser = 0;
+  var startSliceId = 0;
+  var endSliceId = 0;
+  var userFlag = false;
+  var idFlag = false;
+  var dotCount = 0;
+  var slashCount = 0;
+  for (let i = 0; i < site.length; i++) {
+    if (site.charAt(i) === 'c' && site.charAt(i+1) === 'o' && site.charAt(i+2) === 'm') {
+      startSliceUser = i + 4;
+    } else if (site.charAt(i) === '/' && startSliceUser !== 0 && startSliceUser < i && !userFlag) {
+      endSliceUser = i;
+      userFlag = true;
+    } else if (site.charAt(i) === '.' && userFlag) {
+      dotCount++;
+      if (dotCount === 3) {
+        console.log(dotCount);
+        startSliceId = i + 1;
+      }
+    } else if (site.charAt(i) === '/' && i > startSliceId) {
+      slashCount++;
+      if (slashCount > 1) {
+        endSliceId = i;
+      }
+    }
   }
-
-  if (site.charAt(i) === '/' && startSlice !== 0 && startSlice < i && !flag) {
-    console.log("Making endslice", i);
-    endSlice = i;
-    flag = true;
-  }
+  user = site.slice(startSliceUser, endSliceUser);
+  id = site.slice(startSliceId, endSliceId).replace('/', '_');
+  console.log(id);
+  console.log(user);
 }
-user = site.slice(startSlice, endSlice);
-console.log(user);
+
+parseUser();
 
 
 // Default response for appId endpoint contains category, link, name, and id
@@ -53,7 +76,7 @@ getAppEmail = () => {
 
 // The id is in the URL, but formatted differently there than they want it here.
 getPost = () => {
-  app.api(`839057202881028_1144637245656354`, function(res) {
+  app.api(`${id}`, function(res) {
     if(!res || res.error) {
      console.log(!res ? 'error occurred' : res.error);
      return;
@@ -82,7 +105,7 @@ getPublicProfileID = (id) => {
 // Hitting /likes will show us what they like, not how many likes they have.
 // ?fields=fan_count gets us how many likes they have.
 getPublicProfile = () => {
-  app.api(`brandonmikesell23/feed`, function(res) {
+  app.api(`${user}`, function(res) {
     if(!res || res.error) {
      console.log(!res ? 'error occurred' : res.error);
      return;
@@ -131,17 +154,17 @@ getPage = () => {
 }
 
 // To generate an App access token
-// FB.api(`oauth/access_token?client_id=${config.appId}&client_secret=${config.appSecret}&grant_type=client_credentials`, function(res) {
-//
-//   if (!res || res.error) {
-//     console.log(!res ? 'error occurred' : res.error);
-//     return;
-//   }
-//
-//   accessToken = res.access_token;
-//   console.log("access token: ", accessToken);
-//   app.setAccessToken(accessToken);
-//   // getPage();
-//   // getPublicProfile();
-//   getPost();
-// })
+FB.api(`oauth/access_token?client_id=${config.appId}&client_secret=${config.appSecret}&grant_type=client_credentials`, function(res) {
+
+  if (!res || res.error) {
+    console.log(!res ? 'error occurred' : res.error);
+    return;
+  }
+
+  accessToken = res.access_token;
+  console.log("access token: ", accessToken);
+  app.setAccessToken(accessToken);
+  // getPage();
+  getPublicProfile();
+  getPost();
+})
